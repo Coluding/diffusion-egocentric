@@ -28,7 +28,6 @@ pip install --upgrade pip
 pip install --upgrade -r /gpfs/home4/scur1900/cosmos-finetune/requirements.txt
 echo "Dependencies installed successfully"
 
-export HF_TOKEN=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
 
 # Set environment variables
 export PYTHONUNBUFFERED=1

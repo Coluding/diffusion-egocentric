@@ -15,7 +15,6 @@ module purge
 module load 2023
 module load Anaconda3/2023.07-2
 
-export HF_TOKEN=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
 
 eval "$(conda shell.bash hook)"
 
