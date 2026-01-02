@@ -1,0 +1,35 @@
+defaults:
+  - model: cosmos_2b
+  - data: egocentric
+  - optim: adamw
+  - logging: wandb
+  - eval: default
+  - _self_
+
+# Training
+num_epochs: 10
+max_steps: 100000
+gradient_accumulation_steps: 4
+mixed_precision: "bf16"
+
+# Checkpointing
+save_interval: 1000
+eval_interval: 2500
+output_dir: "/gpfs/home4/scur1900/cosmos-finetune/outputs"
+resume_from_checkpoint: null
+
+# Distributed
+num_gpus: 3
+backend: "nccl"
+
+# Misc
+seed: 42
+log_interval: 10
+max_grad_norm: 1.0
+
+# Hydra
+hydra:
+  run:
+    dir: ${output_dir}/hydra_runs/${now:%Y-%m-%d}/${now:%H-%M-%S}
+  job:
+    chdir: false

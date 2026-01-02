@@ -1,0 +1,22 @@
+# Dataset
+dataset_name: "builddotai/Egocentric-100K"
+split: "train"
+cache_dir: "/scratch-shared/scur1900/cosmos_cache"
+streaming: true
+
+# Video processing
+max_frames: 64
+fps: 8
+resolution: [256, 456]  # H, W
+
+# Dataloader
+batch_size: 2
+num_workers: 8
+pin_memory: true
+prefetch_factor: 2
+
+# Validation
+val_split: "validation"
+val_batch_size: 4
+val_num_samples: 100
+val_streaming: true  # Enable streaming for validation to prevent OOM

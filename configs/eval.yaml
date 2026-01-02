@@ -1,0 +1,17 @@
+# Inference settings
+num_inference_steps: 50
+guidance_scale: 7.5
+
+# Sampling
+num_samples: 100
+num_frames: 64
+height: 256
+width: 456
+
+# Seeds for reproducibility
+eval_seeds: [42, 123, 456, 789]
+
+# Metrics
+compute_metrics: true
+save_videos: true
+save_raw_tensors: false

@@ -1,0 +1,32 @@
+name: "nvidia/Cosmos-Predict2.5-2B"
+vae_name: "nvidia/Cosmos-1.0-Tokenizer-CV8x8x8"
+dtype: "fp16"
+
+# Freezing
+freeze_vae: true
+freeze_spatial_blocks: true
+keep_output_proj_trainable: true
+
+# LoRA
+use_lora: true
+lora_rank: 16
+lora_alpha: 32
+lora_dropout: 0.0
+lora_target_modules:
+  - "attn2.to_q"
+  - "attn2.to_k"
+  - "attn2.to_v"
+  - "attn2.to_out"
+
+# Temporal adapters
+use_temporal_adapters: true
+adapter_reduction_factor: 8
+adapter_dropout: 0.0
+
+# Gradient checkpointing
+use_gradient_checkpointing: true
+
+# FSDP
+use_fsdp: true
+cpu_offload: false
+sharding_strategy: "FULL_SHARD"

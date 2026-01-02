@@ -1,0 +1,56 @@
+============================================================================================== 
+Warning! Mixing Conda and module environments may lead to corruption of the
+user environment. 
+We do not recommend users mixing those two environments unless absolutely
+necessary. Note that 
+SURF does not provide any support for Conda environment.
+For more information, please refer to our software policy page:
+https://servicedesk.surf.nl/wiki/display/WIKI/Software+policy+Snellius#SoftwarepolicySnellius-UseofAnacondaandMinicondaenvironmentsonSnellius 
+
+Remember that many packages have already been installed on the system and can
+be loaded using 
+the 'module load <package__name>' command. If you are uncertain if a package is
+already available 
+on the system, please use 'module avail' or 'module spider' to search for it.
+============================================================================================== 
+--- Logging error ---
+Traceback (most recent call last):
+  File "/home/scur1900/.conda/envs/verlenv/lib/python3.10/site-packages/pip/_internal/resolution/resolvelib/factory.py", line 164, in _make_candidate_from_dist
+    base = self._installed_candidate_cache[dist.canonical_name]
+KeyError: 'pillow'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/scur1900/.conda/envs/verlenv/lib/python3.10/site-packages/pip/_internal/utils/logging.py", line 198, in emit
+    self.console.print(renderable, overflow="ignore", crop=False, style=style)
+  File "/home/scur1900/.conda/envs/verlenv/lib/python3.10/site-packages/pip/_vendor/rich/console.py", line 1697, in print
+    with self:
+  File "/home/scur1900/.conda/envs/verlenv/lib/python3.10/site-packages/pip/_vendor/rich/console.py", line 870, in __exit__
+    self._exit_buffer()
+  File "/home/scur1900/.conda/envs/verlenv/lib/python3.10/site-packages/pip/_vendor/rich/console.py", line 826, in _exit_buffer
+    self._check_buffer()
+  File "/home/scur1900/.conda/envs/verlenv/lib/python3.10/site-packages/pip/_vendor/rich/console.py", line 2038, in _check_buffer
+    self._write_buffer()
+  File "/home/scur1900/.conda/envs/verlenv/lib/python3.10/site-packages/pip/_vendor/rich/console.py", line 2112, in _write_buffer
+    self.file.flush()
+OSError: [Errno 122] Disk quota exceeded
+Call stack:
+  File "/home/scur1900/.conda/envs/verlenv/bin/pip", line 10, in <module>
+    sys.exit(main())
+  File "/home/scur1900/.conda/envs/verlenv/lib/python3.10/site-packages/pip/_internal/cli/main.py", line 80, in main
+    return command.main(cmd_args)
+  File "/home/scur1900/.conda/envs/verlenv/lib/python3.10/site-packages/pip/_internal/cli/base_command.py", line 159, in main
+    return self._main(args)
+  File "/home/scur1900/.conda/envs/verlenv/lib/python3.10/site-packages/pip/_internal/cli/base_command.py", line 238, in _main
+    return self._run_wrapper(level_number, options, args)
+  File "/home/scur1900/.conda/envs/verlenv/lib/python3.10/site-packages/pip/_internal/cli/base_command.py", line 107, in _run_wrapper
+    status = _inner_run()
+  File "/home/scur1900/.conda/envs/verlenv/lib/python3.10/site-packages/pip/_internal/cli/base_command.py", line 98, in _inner_run
+    return self.run(options, args)
+  File "/home/scur1900/.conda/envs/verlenv/lib/python3.10/site-packages/pip/_internal/cli/req_command.py", line 85, in wrapper
+    return func(self, options, args)
+  File "/home/scur1900/.conda/envs/verlenv/lib/python3.10/site-packages/pip/_internal/commands/install.py", line 388, in run
+    requirement_set = resolver.resolve(
+  File "/home/scur1900/.conda/envs/verlenv/lib/python3.10/site-packages/pip/_internal/resolution/resolvelib/resolver.py", line 99, in resolve
+    result = self._result = resolver.resolve(

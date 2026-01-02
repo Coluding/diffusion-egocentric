@@ -1,0 +1,14 @@
+# Weights & Biases
+use_wandb: true
+wandb_project: "cosmos-finetune"
+wandb_entity: null  # Set to your entity
+wandb_run_name: "egocentric-lora-r16"
+
+# TensorBoard
+use_tensorboard: true
+tensorboard_dir: "logs/tensorboard"
+
+# Video logging
+log_videos: true
+num_log_videos: 4
+video_log_interval: 2500
