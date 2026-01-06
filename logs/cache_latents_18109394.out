@@ -1,0 +1,30 @@
+=========================================
+Latent Caching Job (No Download)
+=========================================
+Node: gcn144.local.snellius.surf.nl
+GPU: NVIDIA H100
+Dataset cache: /scratch-shared/scur1900/huggingface_cache/datasets
+Latent cache dir: /scratch-shared/scur1900/cosmos_cache
+=========================================
+
+Disk space check:
+2.0K	/scratch-shared/scur1900/huggingface_cache/datasets
+14K	/scratch-shared/scur1900/cosmos_cache
+wstor_scratch1  2.5P  343T  2.1P  14% /gpfs/scratch1
+
+============================================================
+Latent Caching Configuration
+============================================================
+Dataset: builddotai/Egocentric-10K (train)
+VAE Model: madebyollin/sdxl-vae-fp16-fix
+Cache Dir: /scratch-shared/scur1900/cosmos_cache
+Batch Size: 128
+Resolution: [256, 456]
+FPS: 8
+============================================================
+Using device: cuda
+Loading VAE model...
+VAE loaded successfully
+Initialized cache at /scratch-shared/scur1900/cosmos_cache
+
+Starting video processing...

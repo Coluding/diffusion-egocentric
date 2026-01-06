@@ -1,0 +1,76 @@
+=========================================
+Latent Caching Job (No Download)
+=========================================
+Node: gcn106.local.snellius.surf.nl
+GPU: NVIDIA H100
+Dataset cache: /scratch-shared/scur1900/huggingface_cache/datasets
+Latent cache dir: /scratch-shared/scur1900/cosmos_cache
+=========================================
+
+Disk space check:
+2.0K	/scratch-shared/scur1900/huggingface_cache/datasets
+512	/scratch-shared/scur1900/cosmos_cache
+wstor_scratch1  2.5P  343T  2.1P  14% /gpfs/scratch1
+
+============================================================
+Latent Caching Configuration
+============================================================
+Dataset: builddotai/Egocentric-10K (train)
+VAE Model: madebyollin/sdxl-vae-fp16-fix
+Cache Dir: /scratch-shared/scur1900/cosmos_cache
+Batch Size: 1
+Resolution: [256, 456]
+FPS: 8
+============================================================
+Using device: cuda
+Loading VAE model...
+VAE loaded successfully
+Initialized cache at /scratch-shared/scur1900/cosmos_cache
+
+Starting video processing...
+Vid id: factory001_worker001_00000
+--------------------------------------------------
+Vid id: factory001_worker001_00001
+--------------------------------------------------
+Vid id: factory001_worker001_00002
+--------------------------------------------------
+Vid id: factory001_worker001_00003
+--------------------------------------------------
+Vid id: factory001_worker001_00004
+--------------------------------------------------
+Vid id: factory001_worker001_00005
+--------------------------------------------------
+Vid id: factory001_worker001_00006
+--------------------------------------------------
+Vid id: factory001_worker001_00007
+--------------------------------------------------
+Vid id: factory001_worker001_00008
+--------------------------------------------------
+Vid id: factory001_worker001_00009
+--------------------------------------------------
+Vid id: factory001_worker001_00010
+--------------------------------------------------
+Vid id: factory001_worker002_00000
+--------------------------------------------------
+Vid id: factory001_worker002_00001
+--------------------------------------------------
+Vid id: factory001_worker002_00002
+--------------------------------------------------
+Vid id: factory001_worker002_00003
+--------------------------------------------------
+Vid id: factory001_worker002_00004
+--------------------------------------------------
+Vid id: factory001_worker002_00005
+--------------------------------------------------
+Vid id: factory001_worker002_00006
+--------------------------------------------------
+Vid id: factory001_worker002_00007
+--------------------------------------------------
+Vid id: factory001_worker002_00008
+--------------------------------------------------
+Vid id: factory001_worker002_00009
+--------------------------------------------------
+Vid id: factory001_worker003_00000
+--------------------------------------------------
+Vid id: factory001_worker003_00001
+--------------------------------------------------

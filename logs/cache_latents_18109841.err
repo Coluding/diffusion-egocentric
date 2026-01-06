@@ -1,0 +1,48 @@
+============================================================================================== 
+Warning! Mixing Conda and module environments may lead to corruption of the
+user environment. 
+We do not recommend users mixing those two environments unless absolutely
+necessary. Note that 
+SURF does not provide any support for Conda environment.
+For more information, please refer to our software policy page:
+https://servicedesk.surf.nl/wiki/display/WIKI/Software+policy+Snellius#SoftwarepolicySnellius-UseofAnacondaandMinicondaenvironmentsonSnellius 
+
+Remember that many packages have already been installed on the system and can
+be loaded using 
+the 'module load <package__name>' command. If you are uncertain if a package is
+already available 
+on the system, please use 'module avail' or 'module spider' to search for it.
+============================================================================================== 
+Processing videos: 0it [00:00, ?it/s]Processing videos: 1it [00:08,  8.93s/it]Processing videos: 1it [00:19, 19.75s/it]
+Traceback (most recent call last):
+  File "/gpfs/home4/scur1900/cosmos-finetune/src/data/cache_latents.py", line 227, in <module>
+    main()
+  File "/gpfs/home4/scur1900/cosmos-finetune/src/data/cache_latents.py", line 191, in main
+    raise e
+  File "/gpfs/home4/scur1900/cosmos-finetune/src/data/cache_latents.py", line 172, in main
+    latent_dist = vae.encode(frames).latent_dist
+  File "/home/scur1900/.conda/envs/verlenv/lib/python3.10/site-packages/diffusers/utils/accelerate_utils.py", line 46, in wrapper
+    return method(self, *args, **kwargs)
+  File "/home/scur1900/.conda/envs/verlenv/lib/python3.10/site-packages/diffusers/models/autoencoders/autoencoder_kl.py", line 192, in encode
+    h = self._encode(x)
+  File "/home/scur1900/.conda/envs/verlenv/lib/python3.10/site-packages/diffusers/models/autoencoders/autoencoder_kl.py", line 166, in _encode
+    enc = self.encoder(x)
+  File "/home/scur1900/.conda/envs/verlenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/scur1900/.conda/envs/verlenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/scur1900/.conda/envs/verlenv/lib/python3.10/site-packages/diffusers/models/autoencoders/vae.py", line 168, in forward
+    sample = down_block(sample)
+  File "/home/scur1900/.conda/envs/verlenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/scur1900/.conda/envs/verlenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/scur1900/.conda/envs/verlenv/lib/python3.10/site-packages/diffusers/models/unets/unet_2d_blocks.py", line 1442, in forward
+    hidden_states = resnet(hidden_states, temb=None)
+  File "/home/scur1900/.conda/envs/verlenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/scur1900/.conda/envs/verlenv/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/scur1900/.conda/envs/verlenv/lib/python3.10/site-packages/diffusers/models/resnet.py", line 371, in forward
+    output_tensor = (input_tensor + hidden_states) / self.output_scale_factor
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 28.50 GiB. GPU 0 has a total capacity of 93.09 GiB of which 4.80 GiB is free. Including non-PyTorch memory, this process has 88.28 GiB memory in use. Of the allocated memory 87.66 GiB is allocated by PyTorch, and 5.18 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)

@@ -4,6 +4,8 @@ import torchvision.transforms.functional as F
 from typing import Tuple, Optional
 import numpy as np
 from pathlib import Path
+import io
+import tempfile
 
 
 class VideoTransforms:
@@ -33,6 +35,60 @@ class VideoTransforms:
             return video
         except Exception as e:
             raise RuntimeError(f"Failed to load video {video_path}: {e}")
+
+    @staticmethod
+    def load_video_from_bytes(video_bytes: bytes, max_frames: Optional[int] = None) -> torch.Tensor:
+        """
+        Load video from binary data with memory-efficient chunked loading.
+
+        Args:
+            video_bytes: Video file as bytes
+            max_frames: Maximum frames to load (None = all)
+
+        Returns:
+            Video tensor [T, C, H, W] in range [0, 1]
+        """
+        try:
+            import cv2
+            # Write bytes to temporary file
+            with tempfile.NamedTemporaryFile(suffix='.mp4', delete=False) as tmp:
+                tmp.write(video_bytes)
+                tmp_path = tmp.name
+
+            # Use cv2 for memory-efficient frame-by-frame loading
+            cap = cv2.VideoCapture(tmp_path)
+            frames = []
+
+            frame_count = 0
+            while True:
+                ret, frame = cap.read()
+                if not ret:
+                    break
+
+                # Convert BGR to RGB
+                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                # Convert to torch tensor [C, H, W] and normalize to [0, 1]
+                frame = torch.from_numpy(frame).permute(2, 0, 1).float() / 255.0
+                frames.append(frame)
+
+                frame_count += 1
+                if max_frames is not None and frame_count >= max_frames:
+                    break
+
+            cap.release()
+
+            # Clean up temp file
+            Path(tmp_path).unlink()
+
+            if not frames:
+                raise RuntimeError("No frames loaded from video")
+
+            # Stack to [T, C, H, W]
+            video = torch.stack(frames, dim=0)
+            return video
+
+        except Exception as e:
+            raise RuntimeError(f"Failed to load video from bytes: {e}")
 
     @staticmethod
     def spatial_resize(video: torch.Tensor, size: Tuple[int, int]) -> torch.Tensor:

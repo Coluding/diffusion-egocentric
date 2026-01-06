@@ -1,0 +1,16 @@
+============================================================================================== 
+Warning! Mixing Conda and module environments may lead to corruption of the
+user environment. 
+We do not recommend users mixing those two environments unless absolutely
+necessary. Note that 
+SURF does not provide any support for Conda environment.
+For more information, please refer to our software policy page:
+https://servicedesk.surf.nl/wiki/display/WIKI/Software+policy+Snellius#SoftwarepolicySnellius-UseofAnacondaandMinicondaenvironmentsonSnellius 
+
+Remember that many packages have already been installed on the system and can
+be loaded using 
+the 'module load <package__name>' command. If you are uncertain if a package is
+already available 
+on the system, please use 'module avail' or 'module spider' to search for it.
+============================================================================================== 
+Processing videos: 0it [00:00, ?it/s]Processing videos: 1it [00:13, 13.71s/it]Processing videos: 2it [00:26, 12.97s/it]Processing videos: 3it [00:38, 12.90s/it]Processing videos: 4it [00:51, 12.85s/it]Processing videos: 5it [01:06, 13.57s/it]Processing videos: 6it [01:20, 13.64s/it]Processing videos: 7it [01:34, 13.72s/it]Processing videos: 8it [01:46, 13.25s/it]Processing videos: 9it [02:02, 14.05s/it]Processing videos: 10it [02:15, 13.86s/it]Processing videos: 11it [02:28, 13.47s/it]Processing videos: 12it [02:42, 13.62s/it]Processing videos: 13it [02:54, 13.23s/it]Processing videos: 14it [03:08, 13.48s/it]Processing videos: 15it [03:20, 12.91s/it]Processing videos: 16it [03:32, 12.67s/it]Processing videos: 17it [03:46, 13.20s/it]Processing videos: 18it [03:59, 13.13s/it]Processing videos: 19it [04:12, 12.90s/it]Processing videos: 20it [04:23, 12.40s/it]Processing videos: 21it [04:35, 12.20s/it]Processing videos: 22it [04:46, 12.04s/it]Processing videos: 23it [04:58, 11.92s/it]

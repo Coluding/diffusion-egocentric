@@ -92,12 +92,8 @@ class EgocentricDataset(VideoDatasetBase):
         if self.cache and self.cache.has(video_id):
             latents = self.cache.get(video_id)
         else:
-            # Cache miss - this should be rare after preprocessing
-            # For now, raise error to catch misconfiguration
-            raise RuntimeError(
-                f"Cache miss for video_id={video_id}. "
-                "Please run latent caching job before training."
-            )
+            # Handled by collate fn
+            return None
 
         # Temporal processing: pad/crop to max_frames
         latents, mask = VideoTransforms.pad_or_crop_temporal(
@@ -122,11 +118,16 @@ class EgocentricDataset(VideoDatasetBase):
         }
 
     def get_collate_fn(self):
-        """Return collate function for batching."""
         def collate(batch):
+            batch = [b for b in batch if b is not None]
+
+            if len(batch) == 0:
+                return None  
+
             return {
                 "latents": torch.stack([b["latents"] for b in batch]),
                 "mask": torch.stack([b["mask"] for b in batch]),
                 "metadata": [b["metadata"] for b in batch]
             }
         return collate
+

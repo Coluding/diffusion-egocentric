@@ -1,0 +1,16 @@
+============================================================================================== 
+Warning! Mixing Conda and module environments may lead to corruption of the
+user environment. 
+We do not recommend users mixing those two environments unless absolutely
+necessary. Note that 
+SURF does not provide any support for Conda environment.
+For more information, please refer to our software policy page:
+https://servicedesk.surf.nl/wiki/display/WIKI/Software+policy+Snellius#SoftwarepolicySnellius-UseofAnacondaandMinicondaenvironmentsonSnellius 
+
+Remember that many packages have already been installed on the system and can
+be loaded using 
+the 'module load <package__name>' command. If you are uncertain if a package is
+already available 
+on the system, please use 'module avail' or 'module spider' to search for it.
+============================================================================================== 
+Processing videos: 0it [00:00, ?it/s]Processing videos: 1it [00:08,  8.36s/it]Processing videos: 2it [00:16,  8.52s/it]Processing videos: 3it [00:25,  8.64s/it]Processing videos: 4it [00:34,  8.57s/it]Processing videos: 5it [00:43,  8.72s/it]Processing videos: 6it [00:52,  8.79s/it]Processing videos: 7it [01:00,  8.76s/it]Processing videos: 8it [01:09,  8.69s/it][2026-01-06T19:28:37.019] error: *** JOB 18109425 ON gcn144 CANCELLED AT 2026-01-06T19:28:37 DUE to SIGNAL Terminated ***

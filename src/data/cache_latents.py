@@ -3,21 +3,24 @@
 Standalone script for VAE encoding and latent caching.
 
 Usage:
-    python cache_latents.py \\
-        --dataset builddotai/Egocentric-100K \\
-        --split train \\
-        --cache-dir /scratch-shared/cache \\
-        --vae-model nvidia/Cosmos-1.0-Tokenizer-CV8x8x8 \\
+    python cache_latents.py \
+        --dataset builddotai/Egocentric-100K \
+        --split train \
+        --cache-dir /scratch-shared/cache \
+        --vae-model nvidia/Cosmos-1.0-Tokenizer-CV8x8x8 \
         --batch-size 16
 """
 
 import argparse
 import torch
+import os
 from pathlib import Path
-from datasets import load_dataset
+from datasets import load_dataset, Features, Value
 from diffusers import AutoencoderKL
 from tqdm import tqdm
 import sys
+import time
+from huggingface_hub.errors import HfHubHTTPError
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -26,31 +29,43 @@ from data.latent_cache import LatentCache
 from data.transforms import VideoTransforms
 
 
-def load_and_preprocess_video(video_path: str, resolution: tuple, fps: int):
-    """Load and preprocess video for VAE encoding."""
-    # Load video
-    video = VideoTransforms.load_video(video_path)
+def load_and_preprocess_video(
+    video_bytes: bytes,
+    resolution: tuple,
+    fps: int,
+    max_frames: int = 512,
+):
+    """
+    Load and preprocess video for VAE encoding.
 
-    # Spatial resize
+    Returns:
+        Tensor of shape [T, C, H, W]
+    """
+    video = VideoTransforms.load_video_from_bytes(
+        video_bytes, max_frames=max_frames
+    )
     video = VideoTransforms.spatial_resize(video, resolution)
-
-    # Normalize for VAE [-1, 1]
     video = VideoTransforms.normalize_for_vae(video)
-
     return video
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Cache VAE latents for video dataset")
-    parser.add_argument("--dataset", type=str, required=True, help="HF dataset name")
-    parser.add_argument("--split", type=str, default="train", help="Dataset split")
-    parser.add_argument("--cache-dir", type=str, required=True, help="Cache directory")
-    parser.add_argument("--vae-model", type=str, default="nvidia/Cosmos-1.0-Tokenizer-CV8x8x8")
-    parser.add_argument("--batch-size", type=int, default=16, help="Encoding batch size")
+    parser = argparse.ArgumentParser(
+        description="Cache VAE latents for video dataset"
+    )
+    parser.add_argument("--dataset", type=str, required=True)
+    parser.add_argument("--split", type=str, default="train")
+    parser.add_argument("--cache-dir", type=str, required=True)
+    parser.add_argument(
+        "--vae-model",
+        type=str,
+        default="nvidia/Cosmos-1.0-Tokenizer-CV8x8x8",
+    )
+    parser.add_argument("--batch-size", type=int, default=16)
     parser.add_argument("--num-workers", type=int, default=8)
-    parser.add_argument("--resolution", type=int, nargs=2, default=[256, 456], help="H W")
-    parser.add_argument("--fps", type=int, default=8, help="Target FPS")
-    parser.add_argument("--max-samples", type=int, default=None, help="Max samples to cache")
+    parser.add_argument("--resolution", type=int, nargs=2, default=[256, 456])
+    parser.add_argument("--fps", type=int, default=8)
+    parser.add_argument("--max-samples", type=int, default=None)
 
     args = parser.parse_args()
 
@@ -65,117 +80,140 @@ def main():
     print(f"FPS: {args.fps}")
     print("=" * 60)
 
-    # Setup device
     device = "cuda" if torch.cuda.is_available() else "cpu"
     print(f"Using device: {device}")
 
-    # Load VAE
     print("Loading VAE model...")
     vae = AutoencoderKL.from_pretrained(
         args.vae_model,
-        torch_dtype=torch.float16 if device == "cuda" else torch.float32
+        torch_dtype=torch.float16 if device == "cuda" else torch.float32,
     )
-    vae.to(device)
-    vae.eval()
+    vae.to(device).eval()
     print("VAE loaded successfully")
 
-    # Initialize cache
     cache = LatentCache(Path(args.cache_dir))
     print(f"Initialized cache at {args.cache_dir}")
 
-    # Load dataset
-    print(f"Loading dataset {args.dataset}...")
-    dataset = load_dataset(args.dataset, split=args.split, streaming=True)
+    features = Features(
+        {
+            "mp4": Value("binary"),
+            "json": {
+                "factory_id": Value("string"),
+                "worker_id": Value("string"),
+                "video_index": Value("int64"),
+                "duration_sec": Value("float64"),
+                "width": Value("int64"),
+                "height": Value("int64"),
+                "fps": Value("float64"),
+                "size_bytes": Value("int64"),
+                "codec": Value("string"),
+            },
+            "__key__": Value("string"),
+            "__url__": Value("string"),
+        }
+    )
 
-    # Cache statistics
+    dataset = load_dataset(
+        args.dataset,
+        split=args.split,
+        streaming=True,
+        features=features,
+    )
+
     cached_count = 0
     encoded_count = 0
     error_count = 0
 
-    # Process dataset
     batch_videos = []
     batch_ids = []
+
+    print("\nStarting video processing...")
+    sys.stdout.flush()
 
     for i, sample in enumerate(tqdm(dataset, desc="Processing videos")):
         if args.max_samples and i >= args.max_samples:
             break
 
-        video_id = sample.get("video_id", f"video_{i}")
+        video_id = sample.get("__key__", f"video_{i}")
 
-        # Check if already cached
         if cache.has(video_id):
             cached_count += 1
             continue
 
         try:
-            # Get video path from sample
-            video_path = sample.get("video_path") or sample.get("video")
-
-            if video_path is None:
-                print(f"Warning: No video path in sample {i}")
+            video_bytes = sample.get("mp4")
+            if video_bytes is None:
                 error_count += 1
                 continue
 
-            # Load and preprocess
             video = load_and_preprocess_video(
-                video_path,
+                video_bytes,
                 tuple(args.resolution),
-                args.fps
+                args.fps,
+                max_frames=512,
             )
 
             batch_videos.append(video)
             batch_ids.append(video_id)
 
-            # Encode when batch is full
             if len(batch_videos) >= args.batch_size:
                 with torch.no_grad():
-                    # Stack to [B, T, C, H, W]
                     video_batch = torch.stack(batch_videos).to(device)
 
-                    # VAE encode
-                    latent_dist = vae.encode(video_batch).latent_dist
+                    # Stack to [B, T, C, H, W]
+                    B, T, C, H, W = video_batch.shape
+                    frames = video_batch.view(B * T, C, H, W)
+
+                    frames = frames.to(dtype=vae.dtype)
+
+                    latent_dist = vae.encode(frames).latent_dist
                     latents = latent_dist.sample()
 
-                    # Cache each sample
+                    latents = latents.view(
+                        B, T, *latents.shape[1:]
+                    )
+
                     for vid_id, lat in zip(batch_ids, latents):
+                        print(f"Vid id: {vid_id}")
                         cache.set(vid_id, lat.cpu())
                         encoded_count += 1
+                        print("-" * 50)
 
-                # Clear batch
-                batch_videos = []
-                batch_ids = []
+                batch_videos.clear()
+                batch_ids.clear()
+                sys.stdout.flush()
 
         except Exception as e:
-            print(f"Error processing video {video_id}: {e}")
-            error_count += 1
-            continue
+            raise e
 
-    # Encode remaining batch
     if batch_videos:
-        try:
-            with torch.no_grad():
-                video_batch = torch.stack(batch_videos).to(device)
-                latent_dist = vae.encode(video_batch).latent_dist
-                latents = latent_dist.sample()
+        with torch.no_grad():
+            video_batch = torch.stack(batch_videos).to(device)
 
-                for vid_id, lat in zip(batch_ids, latents):
-                    cache.set(vid_id, lat.cpu())
-                    encoded_count += 1
-        except Exception as e:
-            print(f"Error encoding final batch: {e}")
-            error_count += len(batch_videos)
+            B, T, C, H, W = video_batch.shape
+            frames = video_batch.view(B * T, C, H, W)
+            frames = frames.to(dtype=vae.dtype)
 
-    # Final statistics
+            print(f"frame shape {frames.shape}")
+
+            latent_dist = vae.encode(frames).latent_dist
+            latents = latent_dist.sample()
+
+            latents = latents.view(B, T, *latents.shape[1:])
+            print(f"Latent shape {latents.shape}")
+
+            for vid_id, lat in zip(batch_ids, latents):
+                print(f"Vid id: {vid_id}")
+                cache.set(vid_id, lat.cpu())
+                encoded_count += 1
+                print("-" * 50)
+
     print("\n" + "=" * 60)
     print("Caching Complete")
     print("=" * 60)
     print(f"Already cached: {cached_count}")
     print(f"Newly encoded: {encoded_count}")
     print(f"Errors: {error_count}")
-    print(f"Total processed: {cached_count + encoded_count + error_count}")
-
-    cache_stats = cache.get_cache_stats()
-    print(f"\nCache stats: {cache_stats}")
     print("=" * 60)
 
 
